@@ -2,8 +2,20 @@ import axios, { AxiosRequestConfig } from 'axios'
 import identity from 'lodash.identity'
 import pickBy from 'lodash.pickby'
 import qs from 'querystring'
+import Bottleneck from 'bottleneck'
 
 import config from './config'
+import retry from 'async-retry'
+
+const maxRequestsPerSecond = config.maxRequestsPerSecond
+
+const limiter = new Bottleneck({
+  minTime: Math.floor(1000 / maxRequestsPerSecond),
+  maxConcurrent: maxRequestsPerSecond,
+  reservoir: maxRequestsPerSecond,
+  reservoirRefreshAmount: maxRequestsPerSecond,
+  reservoirRefreshInterval: 1000,
+})
 
 type Module = 'account' | 'contract' | 'stats'
 
@@ -75,19 +87,24 @@ async function query<T>(queryOptions: QueryParams, requestConfig?: RequestConfig
   const { axiosConfig, rawAxiosResponse } = requestConfig || {}
 
   const query = qs.stringify(queryParams)
-  const response = await axios.get<Response<T>>(`${config.url}/api?${query}`, axiosConfig)
+  
+  return limiter.schedule(() =>
+    retry(async () => {
+      const response = await axios.get<Response<T>>(`${config.url}/api?${query}`, axiosConfig)
 
-  if (rawAxiosResponse) {
-    return response
-  }
+      if (rawAxiosResponse) {
+        return response
+      }
 
-  const { status, result } = response.data as Response<T>
+      const { status, result } = response.data as Response<T>
 
-  if (status === '0') {
-    throw new Error(String(result))
-  }
+      if (status === '0') {
+        throw new Error(String(result))
+      }
 
-  return result
+      return result
+    })
+  )
 }
 
 export default query

@@ -1,6 +1,6 @@
 import query, { RequestConfig } from './query'
 
-type SourceCode = {
+export interface SourceCode {
   SourceCode: string
   ABI: string
   ContractName: string
@@ -16,7 +16,7 @@ type SourceCode = {
   SwarmSource: string
 }
 
-function getContractAbi(address: string, requestConfig?: RequestConfig) {
+export function getContractAbi(address: string, requestConfig?: RequestConfig) {
   return query<string>(
     {
       address,
@@ -27,7 +27,7 @@ function getContractAbi(address: string, requestConfig?: RequestConfig) {
   )
 }
 
-function getContractSourceCode(address: string, requestConfig?: RequestConfig) {
+export function getContractSourceCode(address: string, requestConfig?: RequestConfig) {
   return query<SourceCode[]>(
     {
       address,
@@ -36,9 +36,4 @@ function getContractSourceCode(address: string, requestConfig?: RequestConfig) {
     },
     requestConfig
   )
-}
-
-export default {
-  getContractAbi,
-  getContractSourceCode,
 }

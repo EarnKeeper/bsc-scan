@@ -1,6 +1,6 @@
 import * as account from './account'
 import config from './config'
-import contract from './contract'
+import * as contract from './contract'
 import stats from './stats'
 import token from './token'
 
