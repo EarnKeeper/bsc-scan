@@ -1,18 +1,18 @@
 import query, { QueryParams, RequestConfig } from './query'
 
-type AccountQueryParams = Omit<QueryParams, 'address' | 'contractAddress' | 'txhash' | 'module' | 'action'>
+export type AccountQueryParams = Omit<QueryParams, 'address' | 'contractAddress' | 'txhash' | 'module' | 'action'>
 
-type BlockRange = {
+export interface BlockRange {
   startBlock?: number
   endBlock: number
 }
 
-type AddressBalance = {
+export interface AddressBalance {
   account: string
   balance: string
 }
 
-type Transaction = {
+export interface Transaction {
   blockNumber: string
   timeStamp: string
   hash: string
@@ -33,7 +33,7 @@ type Transaction = {
   confirmations: string
 }
 
-type InternalTransaction = {
+export interface InternalTransaction {
   blockNumber: string
   timeStamp: string
   hash: string
@@ -50,7 +50,7 @@ type InternalTransaction = {
   errCode: string
 }
 
-type TokenTransferEvent = {
+export interface TokenTransferEvent {
   blockNumber: string
   timeStamp: string
   hash: string
@@ -72,7 +72,7 @@ type TokenTransferEvent = {
   confirmations: string
 }
 
-function getBnbBalance(address: string, queryOptions?: AccountQueryParams, requestConfig?: RequestConfig) {
+export function getBnbBalance(address: string, queryOptions?: AccountQueryParams, requestConfig?: RequestConfig) {
   return query<string>(
     {
       ...queryOptions,
@@ -85,7 +85,7 @@ function getBnbBalance(address: string, queryOptions?: AccountQueryParams, reque
   )
 }
 
-function getBnbBalanceForMultipleAddresses(
+export function getBnbBalanceForMultipleAddresses(
   addresses: string[],
   queryOptions?: AccountQueryParams,
   requestConfig?: RequestConfig
@@ -102,7 +102,7 @@ function getBnbBalanceForMultipleAddresses(
   )
 }
 
-function getInternalTransactionsByAddress(
+export function getInternalTransactionsByAddress(
   address: string,
   queryOptions?: AccountQueryParams,
   requestConfig?: RequestConfig
@@ -118,7 +118,7 @@ function getInternalTransactionsByAddress(
   )
 }
 
-function getInternalTransactionsByHash(
+export function getInternalTransactionsByHash(
   txhash: string,
   queryOptions?: AccountQueryParams,
   requestConfig?: RequestConfig
@@ -134,7 +134,7 @@ function getInternalTransactionsByHash(
   )
 }
 
-function getInternalTransactionsByBlockRange(
+export function getInternalTransactionsByBlockRange(
   blockRange: BlockRange,
   queryOptions?: Omit<AccountQueryParams, 'startBlock' | 'endBlock'>,
   requestConfig?: RequestConfig
@@ -150,7 +150,7 @@ function getInternalTransactionsByBlockRange(
   )
 }
 
-function getTokenTransferEventsByAddress(
+export function getTokenTransferEventsByAddress(
   address: string,
   queryOptions?: AccountQueryParams,
   requestConfig?: RequestConfig
@@ -166,7 +166,7 @@ function getTokenTransferEventsByAddress(
   )
 }
 
-function getTokenTransferEventsByContractAddress(
+export function getTokenTransferEventsByContractAddress(
   contractAddress: string,
   queryOptions?: AccountQueryParams,
   requestConfig?: RequestConfig
@@ -182,7 +182,7 @@ function getTokenTransferEventsByContractAddress(
   )
 }
 
-function getTokenTransferEventsByAddressAndContractAddress(
+export function getTokenTransferEventsByAddressAndContractAddress(
   address: string,
   contractAddress: string,
   queryOptions?: AccountQueryParams,
@@ -200,7 +200,7 @@ function getTokenTransferEventsByAddressAndContractAddress(
   )
 }
 
-function getTransactions(address: string, queryOptions?: AccountQueryParams, requestConfig?: RequestConfig) {
+export function getTransactions(address: string, queryOptions?: AccountQueryParams, requestConfig?: RequestConfig) {
   return query<Transaction[]>(
     {
       ...queryOptions,
@@ -210,16 +210,4 @@ function getTransactions(address: string, queryOptions?: AccountQueryParams, req
     },
     requestConfig
   )
-}
-
-export default {
-  getBnbBalance,
-  getBnbBalanceForMultipleAddresses,
-  getInternalTransactionsByAddress,
-  getInternalTransactionsByHash,
-  getInternalTransactionsByBlockRange,
-  getTokenTransferEventsByAddress,
-  getTokenTransferEventsByContractAddress,
-  getTokenTransferEventsByAddressAndContractAddress,
-  getTransactions,
 }

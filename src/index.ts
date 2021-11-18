@@ -1,4 +1,4 @@
-import account from './account'
+import * as account from './account'
 import config from './config'
 import contract from './contract'
 import stats from './stats'
