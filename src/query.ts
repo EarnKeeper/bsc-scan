@@ -87,23 +87,28 @@ async function query<T>(queryOptions: QueryParams, requestConfig?: RequestConfig
   const { axiosConfig, rawAxiosResponse } = requestConfig || {}
 
   const query = qs.stringify(queryParams)
-  
+
   return limiter.schedule(() =>
-    retry(async () => {
-      const response = await axios.get<Response<T>>(`${config.url}/api?${query}`, axiosConfig)
+    retry(
+      async () => {
+        const response = await axios.get<Response<T>>(`${config.url}/api?${query}`, axiosConfig)
 
-      if (rawAxiosResponse) {
-        return response
+        if (rawAxiosResponse) {
+          return response
+        }
+
+        const { status, result, message } = response.data as Response<T>
+
+        if (status === '0' && message !== 'No transactions found') {
+          throw new Error(message)
+        }
+
+        return result
+      },
+      {
+        onRetry: (error) => console.error(error),
       }
-
-      const { status, result } = response.data as Response<T>
-
-      if (status === '0') {
-        throw new Error(String(result))
-      }
-
-      return result
-    })
+    )
   )
 }
 
